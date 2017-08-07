@@ -46,6 +46,7 @@ EditorView::EditorView(EditorData & editorData, QWidget * parent)
 , m_deleteRow(nullptr)
 , m_insertCol(nullptr)
 , m_deleteCol(nullptr)
+, m_excludeFromMinimap(nullptr)
 , m_editorData(editorData)
 {
     createTileContextMenuActions();
@@ -173,6 +174,17 @@ void EditorView::createTileContextMenuActions()
         setComputerHint(TrackTileBase::CH_BRAKE);
     });
 
+    m_excludeFromMinimap = new QAction(
+        QWidget::tr("Exclude from minimap"), &m_tileContextMenu);
+    m_excludeFromMinimap->setCheckable(true);
+    QObject::connect(m_excludeFromMinimap, &QAction::changed, [this] () {
+        if (TrackTile * tile =
+            dynamic_cast<TrackTile *>(scene()->itemAt(mapToScene(this->m_clickedPos), QTransform())))
+        {
+            tile->setExcludeFromMinimap(this->m_excludeFromMinimap->isChecked());
+        }
+    });
+
     m_insertRow = new QAction(
         QWidget::tr("Insert row.."), &m_tileContextMenu);
     QObject::connect(m_insertRow, &QAction::triggered, [this] () {
@@ -220,6 +232,9 @@ void EditorView::createTileContextMenuActions()
     m_tileContextMenu.addAction(m_clearComputerHint);
     m_tileContextMenu.addAction(m_setComputerHintBrakeHard);
     m_tileContextMenu.addAction(m_setComputerHintBrake);
+    m_tileContextMenu.addSeparator();
+    m_tileContextMenu.addAction(m_excludeFromMinimap);
+    m_tileContextMenu.addSeparator();
     m_tileContextMenu.addAction(m_insertRow);
     m_tileContextMenu.addAction(m_deleteRow);
     m_tileContextMenu.addAction(m_insertCol);
@@ -500,6 +515,8 @@ void EditorView::openTileContextMenu(TrackTile & tile)
     default:
         break;
     }
+
+    m_excludeFromMinimap->setChecked(tile.excludeFromMinimap());
 
     if (m_editorData.trackData())
     {

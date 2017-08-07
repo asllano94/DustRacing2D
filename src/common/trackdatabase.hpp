@@ -140,6 +140,11 @@ public:
             {
                 return "c";
             }
+
+            static QString excludeFromMinimap()
+            {
+                return "e";
+            }
         };
 
         struct Object

@@ -82,6 +82,12 @@ public:
     //! Get computer hint
     ComputerHint computerHint() const;
 
+    /*! Don't show the tile in minimap / preview even if an asphalt tile.
+     *  (Some tracks might include asphalt tiles just for looks) */
+    void setExcludeFromMinimap(bool exclude);
+
+    bool excludeFromMinimap() const;
+
 private:
 
     //! Type string.
@@ -98,6 +104,8 @@ private:
 
     //! Computer hint
     ComputerHint m_computerHint;
+
+    bool m_excludeFromMinimap;
 };
 
 typedef std::shared_ptr<TrackTileBase> TrackTilePtr;
